@@ -25,6 +25,8 @@ model Candidate {
   workExperiences   WorkExperience[]
   resumes           Resume[]
   applications      Application[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 }
 
 model Education {
@@ -35,6 +37,8 @@ model Education {
   endDate       DateTime?
   candidateId   Int
   candidate     Candidate @relation(fields: [candidateId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model WorkExperience {
@@ -46,6 +50,8 @@ model WorkExperience {
   endDate     DateTime?
   candidateId Int
   candidate   Candidate @relation(fields: [candidateId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Resume {
@@ -55,6 +61,8 @@ model Resume {
   uploadDate  DateTime
   candidateId Int
   candidate   Candidate @relation(fields: [candidateId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Company {
@@ -62,6 +70,8 @@ model Company {
   name String @unique
   employees Employee[]
   positions Position[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Employee {
@@ -73,6 +83,8 @@ model Employee {
   role      String
   isActive  Boolean  @default(true)
   interviews Interview[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model InterviewType {
@@ -80,6 +92,8 @@ model InterviewType {
   name        String
   description String?
   interviewSteps InterviewStep[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model InterviewFlow {
@@ -87,6 +101,8 @@ model InterviewFlow {
   description String?
   interviewSteps InterviewStep[]
   positions   Position[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model InterviewStep {
@@ -99,6 +115,8 @@ model InterviewStep {
   interviewType   InterviewType  @relation(fields: [interviewTypeId], references: [id])
   applications    Application[]
   interviews      Interview[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model Position {
@@ -123,6 +141,8 @@ model Position {
   company           Company          @relation(fields: [companyId], references: [id])
   interviewFlow     InterviewFlow    @relation(fields: [interviewFlowId], references: [id])
   applications      Application[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 }
 
 model Application {
@@ -132,10 +152,29 @@ model Application {
   applicationDate      DateTime
   currentInterviewStep Int
   notes                String?
+  modifiedById         Int?           // Nuevo campo para auditoría: quién realizó la última modificación
   position             Position       @relation(fields: [positionId], references: [id])
   candidate            Candidate      @relation(fields: [candidateId], references: [id])
   interviewStep        InterviewStep  @relation(fields: [currentInterviewStep], references: [id])
+  modifiedBy           Employee?      @relation(fields: [modifiedById], references: [id])
   interviews           Interview[]
+  stageHistory         StageHistory[] // Nuevo campo para historial de cambios de etapa
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+}
+
+// Nuevo modelo para registrar el historial de cambios de etapa
+model StageHistory {
+  id                   Int            @id @default(autoincrement())
+  applicationId        Int
+  previousStageId      Int?
+  newStageId           Int
+  modifiedById         Int
+  application          Application    @relation(fields: [applicationId], references: [id])
+  previousStage        InterviewStep? @relation("PreviousStage", fields: [previousStageId], references: [id])
+  newStage             InterviewStep  @relation("NewStage", fields: [newStageId], references: [id])
+  modifiedBy           Employee       @relation(fields: [modifiedById], references: [id])
+  createdAt            DateTime       @default(now())
 }
 
 model Interview {
@@ -150,4 +189,6 @@ model Interview {
   application      Application    @relation(fields: [applicationId], references: [id])
   interviewStep    InterviewStep  @relation(fields: [interviewStepId], references: [id])
   employee         Employee       @relation(fields: [employeeId], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }

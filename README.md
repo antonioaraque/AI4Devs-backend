@@ -15,6 +15,7 @@ This project is a full-stack application with a React frontend and an Express ba
     - `tests/`: Contains test files.
   - `prisma/`: Contains the Prisma schema file for ORM.
   - `tsconfig.json`: TypeScript configuration file.
+  - `api-spec.yaml`: OpenAPI/Swagger specification for API documentation.
 - `frontend/`: Contains the client-side code written in React."
   - `src/`: Contains the source code for the frontend.
   - `public/`: Contains static files such as the HTML file and images.
@@ -81,6 +82,77 @@ npm start
 
 The backend server will be running at http://localhost:3010 and the frontend will be available at http://localhost:3000.
 
+## API Documentation
+
+The API documentation is available through Swagger UI at http://localhost:3010/api-docs when the backend server is running. This interactive documentation allows you to explore and test all available endpoints.
+
+## Kanban API Endpoints
+
+The system includes specialized endpoints for managing candidates in a kanban-style interface:
+
+### 1. Get Candidates by Position
+
+Retrieves all candidates associated with a specific position along with their current stage and interview scores.
+
+```
+GET /positions/:id/candidates
+```
+
+**Response Example:**
+```json
+[
+  {
+    "full_name": "John Doe",
+    "current_interview_step": "Technical Interview",
+    "average_score": 4.5
+  },
+  {
+    "full_name": "Jane Smith",
+    "current_interview_step": "HR Interview",
+    "average_score": 4.0
+  }
+]
+```
+
+### 2. Update Candidate Stage
+
+Moves a candidate to a different stage in the selection process.
+
+```
+PUT /candidates/:id/stage
+```
+
+**Request Body:**
+```json
+{
+  "current_interview_step": "Offer",
+  "modified_by_id": 1
+}
+```
+
+**Response Example:**
+```json
+{
+  "message": "Etapa del candidato actualizada con éxito",
+  "data": {
+    "id": 1,
+    "candidateId": 5,
+    "positionId": 3,
+    "currentInterviewStep": 4,
+    "applicationDate": "2023-06-15T10:30:00Z"
+  }
+}
+```
+
+## Audit and Tracking Features
+
+The system includes several features for tracking changes and maintaining data integrity:
+
+1. **Stage Change History**: All changes to a candidate's stage are recorded with timestamps and user information.
+2. **Modification Tracking**: The system tracks who made the most recent changes to applications.
+3. **Timestamps**: All entities include creation and update timestamps.
+4. **Validation Rules**: Business rules prevent candidates in final stages (like "Rejected" or "Hired") from being moved to other stages.
+
 ## Docker and PostgreSQL
 
 This project uses Docker to run a PostgreSQL database. Here's how to set it up:
@@ -111,7 +183,7 @@ docker-compose down
 ```
 To generate the database using Prisma, follow these steps:
 
-1. Make sure that the .env file in the root directory of the backend contains the DATABASE_URL variable with the correct connection string to your PostgreSQL database. If it doesn’t work, try replacing the full URL directly in schema.prisma, in the url variable.
+1. Make sure that the .env file in the root directory of the backend contains the DATABASE_URL variable with the correct connection string to your PostgreSQL database. If it doesn't work, try replacing the full URL directly in schema.prisma, in the url variable.
 
 2. Open a terminal and navigate to the backend directory where the schema.prisma and seed.ts files are located.
 
@@ -176,6 +248,7 @@ Este proyecto es una aplicación full-stack con un frontend en React y un backen
     - `tests/`: Contiene archivos de prueba.
   - `prisma/`: Contiene el archivo de esquema de Prisma para ORM.
   - `tsconfig.json`: Archivo de configuración de TypeScript.
+  - `api-spec.yaml`: Especificación OpenAPI/Swagger para documentación de la API.
 - `frontend/`: Contiene el código del lado del cliente escrito en React.
   - `src/`: Contiene el código fuente para el frontend.
   - `public/`: Contiene archivos estáticos como el archivo HTML e imágenes.
@@ -240,6 +313,77 @@ npm start
 ```
 
 El servidor backend estará corriendo en http://localhost:3010 y el frontend estará disponible en http://localhost:3000.
+
+## Documentación de la API
+
+La documentación de la API está disponible a través de Swagger UI en http://localhost:3010/api-docs cuando el servidor backend está en ejecución. Esta documentación interactiva te permite explorar y probar todos los endpoints disponibles.
+
+## Endpoints de la API Kanban
+
+El sistema incluye endpoints especializados para gestionar candidatos en una interfaz estilo kanban:
+
+### 1. Obtener Candidatos por Posición
+
+Recupera todos los candidatos asociados a una posición específica junto con su etapa actual y puntuaciones de entrevistas.
+
+```
+GET /positions/:id/candidates
+```
+
+**Ejemplo de Respuesta:**
+```json
+[
+  {
+    "full_name": "John Doe",
+    "current_interview_step": "Entrevista Técnica",
+    "average_score": 4.5
+  },
+  {
+    "full_name": "Jane Smith",
+    "current_interview_step": "Entrevista RRHH",
+    "average_score": 4.0
+  }
+]
+```
+
+### 2. Actualizar Etapa del Candidato
+
+Mueve a un candidato a una etapa diferente en el proceso de selección.
+
+```
+PUT /candidates/:id/stage
+```
+
+**Cuerpo de la Solicitud:**
+```json
+{
+  "current_interview_step": "Oferta",
+  "modified_by_id": 1
+}
+```
+
+**Ejemplo de Respuesta:**
+```json
+{
+  "message": "Etapa del candidato actualizada con éxito",
+  "data": {
+    "id": 1,
+    "candidateId": 5,
+    "positionId": 3,
+    "currentInterviewStep": 4,
+    "applicationDate": "2023-06-15T10:30:00Z"
+  }
+}
+```
+
+## Características de Auditoría y Seguimiento
+
+El sistema incluye varias características para rastrear cambios y mantener la integridad de los datos:
+
+1. **Historial de Cambios de Etapa**: Todos los cambios a la etapa de un candidato se registran con marcas de tiempo e información del usuario.
+2. **Seguimiento de Modificaciones**: El sistema rastrea quién realizó los cambios más recientes en las aplicaciones.
+3. **Marcas de Tiempo**: Todas las entidades incluyen marcas de tiempo de creación y actualización.
+4. **Reglas de Validación**: Las reglas de negocio impiden que los candidatos en etapas finales (como "Rechazado" o "Contratado") sean movidos a otras etapas.
 
 ## Docker y PostgreSQL
 
